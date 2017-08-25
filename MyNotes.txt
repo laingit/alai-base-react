@@ -1,0 +1,10 @@
+- Repository create in github
+- git clone https://github.com/laingit/alai-base-react.git
+- ng set --global packageManager=yarn
+- create-react-app alai-base-react 
+  yarn install
+  yarn start
+- git add .
+- git commit -m "First commit"
+- git push
+- created "MyNote.txt" (this file)
