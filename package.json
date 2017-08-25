@@ -7,7 +7,9 @@
   },
   "dependencies": {
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "react-json-tree": "^0.10.9",
+    "react-json-viewer": "^1.6.1"
   },
   "scripts": {
     "start": "react-scripts start",
