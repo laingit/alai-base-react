@@ -2,24 +2,28 @@ import React, { Component } from 'react';
 import './App.css';
 import JSONViewer from 'react-json-viewer';
 import JSONTree from 'react-json-tree'
-import livDue from './liv_due.json';
+// import livDue from './liv_due.json';
+import livDueGerarchia from './liv_due_gerarchia.json';
 
-let dataNorma = {
-  liv2: {
-    "A1.1": {desc:"_a1.1", dentro: "A1", sort: 1},
-    "A1.2": {desc:"_a1.2", dentro: "A1", sort: 2},
-    "B1.1": {desc:"_b1.1", dentro: "B1", sort: 1},
-  },
-  liv1: {
-    "A1": {desc: "_a1", dentro: "A", sort:1},
-    "B1": {desc: "_b1", dentro: "B", sort:1}
-  },
-  liv0: {
-    "A": {desc: "_a", dentro: "root", sort:1},
-    "B": {desc: "_b", dentro: "root", sort:2}
-  },
-  links: ["liv2","liv1","liv0"]
-}
+// let dataNorma = {
+//   liv2: {
+//     "A1.1": {desc:"_a1.1", dentro: "A1", sort: 1},
+//     "A1.2": {desc:"_a1.2", dentro: "A1", sort: 2},
+//     "B1.1": {desc:"_b1.1", dentro: "B1", sort: 1},
+//   },
+//   liv1: {
+//     "A1": {desc: "_a1", dentro: "A", sort:1},
+//     "B1": {desc: "_b1", dentro: "B", sort:1}
+//   },
+//   liv0: {
+//     "A": {desc: "_a", dentro: "root", sort:1},
+//     "B": {desc: "_b", dentro: "root", sort:2}
+//   },
+//   links: ["liv2","liv1","liv0"]
+// }
+
+let dataNorma = livDueGerarchia.data;
+console.log(dataNorma)
 
 function getParentsOfVaules(state, tableKey, values) {
   const table = state[tableKey];
@@ -29,8 +33,8 @@ function getParentsOfVaules(state, tableKey, values) {
   
   const selectedFromTable = 
     values.map(value => {
-        let {dentro, sort} = table[value];
-        return {tableKey, value, dentro, sort};
+        let {dentro} = table[value];
+        return {tableKey, value, dentro};
       });
 
   function riduciFun(acc, v) {
@@ -47,16 +51,16 @@ function getParentsOfVaules(state, tableKey, values) {
   }
   const riassunto =  selectedFromTable.reduce(riduciFun, {});
 
-  function ordinaSelezionaCampi(obj, soloId = true) {
+  function selezionaCampi(obj, soloId = true) {
     let newObj = {};
     Object.keys(obj).map(key => {
       let lista = obj[key];
       // ordina in place
-      lista.sort((obj1, obj2) => obj1.sort - obj2.sort);
+      // lista.sort((obj1, obj2) => obj1.sort - obj2.sort); 
 
       // seleziona i campi 
       let soloCampiSelezionati = lista.map(v => {
-        let {tableKey, dentro, value, sort} = v;
+        let {tableKey, value} = v;
         if (soloId) {
           return [tableKey, value]; // Id
         } else {
@@ -71,7 +75,7 @@ function getParentsOfVaules(state, tableKey, values) {
   }
   
   let soloId = true;
-  return ordinaSelezionaCampi(riassunto, soloId);
+  return selezionaCampi(riassunto, soloId);
 }
 
 
@@ -98,21 +102,21 @@ function createFlatten(dataNorm, legenda) {
     iDsLiv0.forEach( ident => {
       let [tableKey, value] = ident;
       let liv_value = getFromDataNorm(dataNorm, ident);
-      let liv_value_completo = Object.assign({tableKey, value}, liv_value)
+      let liv_value_completo = Object.assign({tag: tableKey, value}, liv_value)
       root.push(liv_value_completo);
       TABELLA = "liv1";
       let iDsLiv1 = legenda[TABELLA][value];
       iDsLiv1.forEach( ident => {
         let [tableKey, value] = ident;
         let liv_value = getFromDataNorm(dataNorm, ident);
-        let liv_value_completo = Object.assign({tableKey, value}, liv_value)
+        let liv_value_completo = Object.assign({tag: tableKey, value}, liv_value)
         root.push(liv_value_completo);
         TABELLA = "liv2";
         let iDsLiv2 = legenda[TABELLA][value]; // value = A1, A2, B1 Fkey liv2 - iDs liv1
         iDsLiv2.forEach( ident => {           // value = A1.1, A1.2 - iDs liv2
           let [tableKey, value] = ident;
           let liv_value = getFromDataNorm(dataNorm, ident);
-          let liv_value_completo = Object.assign({tableKey, value}, liv_value)
+          let liv_value_completo = Object.assign({tag: tableKey, value}, liv_value)
           root.push(liv_value_completo);
         });
       });
@@ -131,18 +135,21 @@ function createTree(dataNorm, legenda) {
   if (iDsLiv0) {
     iDsLiv0.forEach( ident => {
       let [tableKey, value] = ident;
-      let new0 = {value, children: []};
+      let value0 = getFromDataNorm(dataNorm, ident);
+      let new0 = {tag: "liv0", value: value0, children: []};
       TABELLA = "liv1";
       let iDsLiv1 = legenda[TABELLA][value];
       iDsLiv1.forEach( ident => {
         let [tableKey, value] = ident;
-        let new1 = {value, children: []};
+        let value1 = getFromDataNorm(dataNorm, ident);
+        let new1 = {tag: "liv1",value: value1, children: []};
         new0.children.push(new1);
         TABELLA = "liv2";
         let iDsLiv2 = legenda[TABELLA][value]; // value = A1, A2, B1 Fkey liv2 - iDs liv1
         iDsLiv2.forEach( ident => {           // value = A1.1, A1.2 - iDs liv2
           let [tableKey, value] = ident;
-          let new2 = {value};
+          let value2 = getFromDataNorm(dataNorm, ident);
+          let new2 = {tag: "liv2", value: value2};
           new1.children.push(new2);
         });
       });
@@ -153,41 +160,51 @@ function createTree(dataNorm, legenda) {
   return root;
 }
 
-let legCartofato = selezionaLegendaDaCartografati(dataNorma,[]);
-let rootElaborato = createTree(dataNorma, legCartofato);
+function compareArrayOfString(a,b) {
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+}
+
+let codiciTrovati = ["nc", "A1.1", "A1.2", "B1.1", "Cana"];
+codiciTrovati.sort(compareArrayOfString);
+let legCartografato = selezionaLegendaDaCartografati(dataNorma,codiciTrovati);
+
+let rootTree = createTree(dataNorma, legCartografato);
+let rootFlatten = createFlatten(dataNorma, legCartografato);
 
 
-let myTree = [
-  {
-    value: {kind: "liv0", desc: "A"},
-    children: [
-      {
-        value: "A1",
-        children: [
-          {
-            value: "A1.1"
-          },
-          {
-            value: "A1.2"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    value: {kind: "liv0", desc: "B"},
-    children: [
-      {
-        value: "B1",
-        children: [
-          {
-            value: "B1.1"
-          }
-        ]
-      }
-    ]
-  },
-]
+// let myTree = [
+//   {
+//     value: {kind: "liv0", desc: "A"},
+//     children: [
+//       {
+//         value: "A1",
+//         children: [
+//           {
+//             value: "A1.1"
+//           },
+//           {
+//             value: "A1.2"
+//           }
+//         ]
+//       }
+//     ]
+//   },
+//   {
+//     value: {kind: "liv0", desc: "B"},
+//     children: [
+//       {
+//         value: "B1",
+//         children: [
+//           {
+//             value: "B1.1"
+//           }
+//         ]
+//       }
+//     ]
+//   },
+// ]
 
 // let data = [
 //   {liv2: "A1.1", desc:"_a1.1", keyIs: "liv2", dentro: "A1"},
@@ -217,8 +234,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-       <JSONTree data={legCartofato}/>
-       <JSONViewer json={rootElaborato}/> 
+       <JSONTree data={legCartografato}/>
+       <JSONViewer json={rootFlatten}/> 
       </div>
     );
   }
