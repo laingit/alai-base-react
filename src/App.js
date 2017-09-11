@@ -5,6 +5,8 @@ import JSONTree from 'react-json-tree'
 // import livDue from './liv_due.json';
 import livDueGerarchia from './liv_due_gerarchia.json';
 
+import {getTreeGerarchia, getFlattenGerarchia } from './Litologia';
+
 // let dataNorma = {
 //   liv2: {
 //     "A1.1": {desc:"_a1.1", dentro: "A1", sort: 1},
@@ -167,11 +169,14 @@ function compareArrayOfString(a,b) {
 }
 
 let codiciTrovati = ["nc", "A1.1", "A1.2", "B1.1", "Cana"];
-codiciTrovati.sort(compareArrayOfString);
-let legCartografato = selezionaLegendaDaCartografati(dataNorma,codiciTrovati);
 
-let rootTree = createTree(dataNorma, legCartografato);
-let rootFlatten = createFlatten(dataNorma, legCartografato);
+// codiciTrovati.sort(compareArrayOfString);
+// let legCartografato = selezionaLegendaDaCartografati(dataNorma,codiciTrovati);
+// let rootTree = createTree(dataNorma, legCartografato);
+// let rootFlatten = createFlatten(dataNorma, legCartografato);
+
+let rootTree = getTreeGerarchia(codiciTrovati);
+let rootFlatten = getFlattenGerarchia(codiciTrovati);
 
 
 // let myTree = [
@@ -234,8 +239,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-       <JSONTree data={legCartografato}/>
-       <JSONViewer json={rootFlatten}/> 
+       {/* <JSONTree data={legCartografato}/> */}
+       <JSONViewer json={rootTree}/> 
       </div>
     );
   }
