@@ -6,15 +6,19 @@
     "react-scripts": "1.0.11"
   },
   "dependencies": {
-    "@boundlessgeo/sdk": "^2.0.0-alpha1",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "@boundlessgeo/sdk": "^2.0.2",
+    "node-sass-chokidar": "^0.0.3",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
     "react-json-tree": "^0.10.9",
     "react-json-viewer": "^1.6.1",
     "react-redux": "^5.0.6",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "sass-lint": "^1.11.1"
   },
   "scripts": {
+    "build-css": "node-sass-chokidar src/ --include-path node_modules/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/ --include-path node_modules/ -o src/ --watch --recursive",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

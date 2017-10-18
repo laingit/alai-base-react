@@ -97,7 +97,9 @@ const addWMS = () => {
 const App = () => (
   <div>
 
-  <SdkMap styles={{width: '600px', height: '600px'}}
+  <SdkMap  styles={{width: '800px',
+              fontSize: '16px',
+              backgroundColor: '#fff'}}
     includeFeaturesOnClick
     onClick={(map, xy, featuresPromise) => {
       // show a popup containing WMS GetFeatureInfo.
