@@ -1,5 +1,23 @@
 body {
   margin: 0;
-  padding: 0;
+  padding: 10;
   font-family: sans-serif;
 }
+
+#map .sdk-map {
+  width: 600px;
+  height: 700px;
+}
+
+.sdk-popup-content {
+  min-width: 13rem; }
+
+.sdk-popup-content ul {
+  padding: 0; }
+
+.sdk-popup-content ul li {
+  margin-bottom: .5rem; }
+
+.sdk-popup-content ul li .title {
+  font-weight: 700; }
+
