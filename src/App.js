@@ -12,8 +12,12 @@ import WMSCapabilitiesFormat from 'ol/format/wmscapabilities';
 
 import SdkMap from '@boundlessgeo/sdk/components/map';
 import SdkMapReducer from '@boundlessgeo/sdk/reducers/map';
+import SdkLayerList from '@boundlessgeo/sdk/components/layer-list';
+import { SdkLayerListItem } from '@boundlessgeo/sdk/components/layer-list';
+
 import * as mapActions from '@boundlessgeo/sdk/actions/map';
 
+import { Provider } from 'react-redux';
 import '@boundlessgeo/sdk/stylesheet/sdk.scss';
 import WMSPopup from './wmspopup';
 import LayerList from './layerlist';
@@ -24,27 +28,6 @@ const store = createStore(combineReducers({
   map: SdkMapReducer,
 }), window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
    applyMiddleware(thunkMiddleware));
-
-// var vectorLayer =  new ol.layer.Image({
-// source: new ol.source.ImageVector({
-//     source: new ol.source.Vector({
-//     url: 'http://localhost:8080/geoserver/Arpas/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Arpas:idropost&maxFeatures=200&outputFormat=application%2Fjson&srsName=EPSG:3857',
-//     format: new ol.format.GeoJSON(),
-//     }),
-//     style: new ol.style.Style({
-//       image: new ol.style.Circle({
-//         fill: new ol.style.Fill({
-//           color: 'rgba(255,0,0,0.8)'
-//         }),
-//         radius: 3,
-//         stroke: new ol.style.Stroke({
-//           color: '#000',
-//           width: 1
-//         })
-//       })
-//     })
-// }),
-// });
 
 const addDataFromGeoJSON = (url, sourceName) => {
   // Fetch URL
@@ -63,17 +46,27 @@ const addDataFromGeoJSON = (url, sourceName) => {
       store.dispatch(mapActions.addLayer({
         id: sourceName,
         source: sourceName,
+        filter: ['==', 'priorita', '1'],
         paint: {
           'circle-radius': 5,
           'circle-color': '#f46b42',
-          'circle-stroke-color': '#3a160b',
+          'circle-stroke-color': '#3a160b'
         }
       }));
     });
 };
 
+
+
 const addIdrometri = () => {
-  let url = 'http://localhost:8080/geoserver/Arpas/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=Arpas:idropost&maxFeatures=200&outputFormat=application%2Fjson&srsName=EPSG:3857';
+  let srsName = 'EPSG:3857';
+  let typeName = 'Arpas:idropost';
+
+  let url = `http://localhost:8080/geoserver/Arpas/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=${typeName}&maxFeatures=200&outputFormat=application%2Fjson&srsName=${srsName}`;
+
+  // let url = 'http://localhost:8080/geoserver/Arpas/ows?service=WFS&'+
+  //            'version=1.0.0&request=GetFeature&typeName=Arpas:idropost&maxFeatures=200&' +
+  //            'outputFormat=application%2Fjson&srsName=EPSG:3857';
   let sourceName = 'idrometri'
   addDataFromGeoJSON(url, sourceName);
 }
@@ -147,8 +140,19 @@ const addWMS = () => {
   });
 };
 
+const displayTable = () => {
+  const features = store.getState().map.layers;
+  console.log(features);
+  console.log(store.getState().map);
+  // Place the table on the page
+  ReactDOM.render((
+    <div >
+     features
+    </div>), document.getElementById('table'));
+};
+
 const App = () => (
-  <div>
+<div>
   <SdkMap  
     includeFeaturesOnClick
     onClick={(map, xy, featuresPromise) => {
@@ -179,13 +183,17 @@ const App = () => (
     }}
     store={store}
   />
-
   <div>
     <h4>Layers</h4>
     <LayerList store={store} />
-    
+    <div className="sdk-layerlist">
+        <Provider store={store}>
+          <SdkLayerList  />
+        </Provider>
+      </div>
     <button onClick={addWMS}>Add WMS Layer</button>
     <button onClick={addIdrometri}>Add IDROMETRI Layer</button>
+    <button className="sdk-btn" onClick={displayTable}>Show the data in a table</button>
   </div>
 </div>
 );
