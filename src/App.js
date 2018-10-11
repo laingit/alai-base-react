@@ -103,8 +103,7 @@ store.dispatch(mapActions.addLayer({
 // retrieve GetCapabilities and give user ability to add a layer.
 const addWMS = () => {
   // this requires CORS headers on the geoserver instance.
-  //const urlBound = 'https://demo.boundlessgeo.com/geoserver/wms?service=WMS&request=GetCapabilities';
-  const urlLocal = 'http://192.168.18.51:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities';
+  const urlLocal = 'http://192.168.18.131:8080/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities';
   //const urlRegione = 'http://webgis.regione.sardegna.it/geoserver/ows?service=WMS&request=GetCapabilities';
   fetch(urlLocal)
   .then(
@@ -117,8 +116,7 @@ const addWMS = () => {
     ReactDOM.render(<AddWMSLayer
       onAddLayer={(layer) => {
         // add a new source and layer
-        //const getMapUrlBound = `https://demo.boundlessgeo.com/geoserver/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&SRS=EPSG:900913&LAYERS=${layer.Name}&STYLES=&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}`;
-        const getMapUrlLocal = `http://192.168.18.51:8080/geoserver/ows?service=wms&version=1.3.0&request=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&SRS=EPSG:900913&LAYERS=${layer.Name}&STYLES=&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}`;
+        const getMapUrlLocal = `http://192.168.18.131:8080/geoserver/ows?service=wms&version=1.3.0&request=GetMap&FORMAT=image/png&TRANSPARENT=TRUE&SRS=EPSG:900913&LAYERS=${layer.Name}&STYLES=&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}`;
         //const getMapUrlRegione = `http://webgis.regione.sardegna.it/geoserver/ows?service=WMS&request=GetCapabilities&FORMAT=image/png&TRANSPARENT=TRUE&SRS=EPSG:900913&LAYERS=${layer.Name}&STYLES=&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}`;
         store.dispatch(mapActions.addSource(layer.Name, {
           type: 'raster',
@@ -153,34 +151,7 @@ const displayTable = () => {
 
 const App = () => (
 <div>
-  <SdkMap  
-    includeFeaturesOnClick
-    onClick={(map, xy, featuresPromise) => {
-      // show a popup containing WMS GetFeatureInfo.
-      featuresPromise.then((featureGroups) => {
-        // setup an array for all the features returned in the promise.
-        let features = [];
-
-        // featureGroups is an array of objects. The key of each object
-        // is a layer from the map.
-        for (let g = 0, gg = featureGroups.length; g < gg; g++) {
-          // collect every feature from each layer.
-          const layers = Object.keys(featureGroups[g]);
-          for (let l = 0, ll = layers.length; l < ll; l++) {
-            const layer = layers[l];
-            features = features.concat(featureGroups[g][layer]);
-          }
-        }
-        if (features.length > 0) {
-          map.addPopup(<WMSPopup
-            coordinate={xy}
-            closeable
-            features={features}
-          />);
-        }
-      });
-
-    }}
+  <SdkMap      
     store={store}
   />
   <div>
@@ -197,8 +168,6 @@ const App = () => (
   </div>
 </div>
 );
-  
-
 
 export default App;
 
